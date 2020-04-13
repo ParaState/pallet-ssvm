@@ -1,0 +1,11 @@
+[package]
+name = "pallet-ssvm"
+version = "0.0.1"
+license = "AGPL-3.0"
+authors = ["SecondState"]
+description = "FRAME EWASM VM (SSVM) contracts pallet"
+edition = "2018"
+repository = "https://github.com/second-state/pallet-ssvm/"
+
+[dependencies]
+rust-ssvm = { git = "https://github.com/second-state/rust-ssvm.git" }
