@@ -3,7 +3,7 @@ name = "pallet-ssvm"
 version = "0.0.1"
 authors = ["Second State"]
 edition = "2018"
-license = "GPL-3.0"
+license = "AGPL-3.0"
 repository = "https://github.com/second-state/pallet-ssvm"
 description = "Substrate SSVM pallet"
 
