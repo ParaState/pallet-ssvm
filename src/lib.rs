@@ -23,10 +23,7 @@ mod backend;
 
 #[cfg(feature = "std")]
 use crate::backend::HostContext;
-pub use crate::backend::{create_address, Account, Backend, Log, TxContext, Vicinity};
-use evm::backend::ApplyBackend;
-use evm::executor::StackExecutor;
-use evm::{Config, ExitError, ExitReason, ExitSucceed};
+pub use crate::backend::{create_address, Account, Log, TxContext};
 use frame_support::traits::{Currency, ExistenceRequirement, WithdrawReason};
 use frame_support::weights::SimpleDispatchInfo;
 use frame_support::weights::{DispatchClass, FunctionOf, Weight};

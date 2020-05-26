@@ -14,16 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::{AccountCodes, AccountStorages, Accounts, Event, Module, Trait};
+use crate::{AccountCodes, Accounts, Event, Module, Trait};
 use codec::{Decode, Encode};
-use evm::backend::{Apply, ApplyBackend, Backend as BackendT};
 use frame_support::storage::{StorageDoubleMap, StorageMap};
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Keccak256};
 use sp_core::{H160, H256, U256};
 use sp_runtime::traits::UniqueSaturatedInto;
-use sp_std::if_std;
 use sp_std::marker::PhantomData;
 use sp_std::vec::Vec;
 #[cfg(feature = "std")]
@@ -51,160 +49,6 @@ pub struct Log {
     pub topics: Vec<H256>,
     /// Byte array data of the log.
     pub data: Vec<u8>,
-}
-
-#[derive(Clone, Eq, PartialEq, Encode, Decode, Default)]
-#[cfg_attr(feature = "std", derive(Debug, Serialize, Deserialize))]
-/// External input from the transaction.
-pub struct Vicinity {
-    /// Current transaction gas price.
-    pub gas_price: U256,
-    /// Origin of the transaction.
-    pub origin: H160,
-}
-
-/// Substrate backend for EVM.
-pub struct Backend<'vicinity, T> {
-    vicinity: &'vicinity Vicinity,
-    _marker: PhantomData<T>,
-}
-
-impl<'vicinity, T> Backend<'vicinity, T> {
-    /// Create a new backend with given vicinity.
-    pub fn new(vicinity: &'vicinity Vicinity) -> Self {
-        Self {
-            vicinity,
-            _marker: PhantomData,
-        }
-    }
-}
-
-impl<'vicinity, T: Trait> BackendT for Backend<'vicinity, T> {
-    fn gas_price(&self) -> U256 {
-        self.vicinity.gas_price
-    }
-    fn origin(&self) -> H160 {
-        self.vicinity.origin
-    }
-
-    fn block_hash(&self, number: U256) -> H256 {
-        if number > U256::from(u32::max_value()) {
-            H256::default()
-        } else {
-            let number = T::BlockNumber::from(number.as_u32());
-            H256::from_slice(frame_system::Module::<T>::block_hash(number).as_ref())
-        }
-    }
-
-    fn block_number(&self) -> U256 {
-        let number: u128 = frame_system::Module::<T>::block_number().unique_saturated_into();
-        U256::from(number)
-    }
-
-    fn block_coinbase(&self) -> H160 {
-        H160::default()
-    }
-
-    fn block_timestamp(&self) -> U256 {
-        let now: u128 = pallet_timestamp::Module::<T>::get().unique_saturated_into();
-        U256::from(now)
-    }
-
-    fn block_difficulty(&self) -> U256 {
-        U256::zero()
-    }
-
-    fn block_gas_limit(&self) -> U256 {
-        U256::zero()
-    }
-
-    fn chain_id(&self) -> U256 {
-        U256::from(sp_io::misc::chain_id())
-    }
-
-    fn exists(&self, _address: H160) -> bool {
-        true
-    }
-
-    fn basic(&self, address: H160) -> evm::backend::Basic {
-        let account = Accounts::get(&address);
-
-        evm::backend::Basic {
-            balance: account.balance,
-            nonce: account.nonce,
-        }
-    }
-
-    fn code_size(&self, address: H160) -> usize {
-        AccountCodes::decode_len(&address).unwrap_or(0)
-    }
-
-    fn code_hash(&self, address: H160) -> H256 {
-        H256::from_slice(Keccak256::digest(&AccountCodes::get(&address)).as_slice())
-    }
-
-    fn code(&self, address: H160) -> Vec<u8> {
-        AccountCodes::get(&address)
-    }
-
-    fn storage(&self, address: H160, index: H256) -> H256 {
-        AccountStorages::get(address, index)
-    }
-}
-
-impl<'vicinity, T: Trait> ApplyBackend for Backend<'vicinity, T> {
-    fn apply<A, I, L>(&mut self, values: A, logs: L, delete_empty: bool)
-    where
-        A: IntoIterator<Item = Apply<I>>,
-        I: IntoIterator<Item = (H256, H256)>,
-        L: IntoIterator<Item = evm::backend::Log>,
-    {
-        for apply in values {
-            match apply {
-                Apply::Modify {
-                    address,
-                    basic,
-                    code,
-                    storage,
-                    reset_storage,
-                } => {
-                    Accounts::mutate(&address, |account| {
-                        account.balance = basic.balance;
-                        account.nonce = basic.nonce;
-                    });
-
-                    if let Some(code) = code {
-                        AccountCodes::insert(address, code);
-                    }
-
-                    if reset_storage {
-                        AccountStorages::remove_prefix(address);
-                    }
-
-                    for (index, value) in storage {
-                        if value == H256::default() {
-                            AccountStorages::remove(address, index);
-                        } else {
-                            AccountStorages::insert(address, index, value);
-                        }
-                    }
-
-                    if delete_empty {
-                        Module::<T>::remove_account_if_empty(&address);
-                    }
-                }
-                Apply::Delete { address } => Module::<T>::remove_account(&address),
-            }
-        }
-
-        for log in logs {
-            Module::<T>::deposit_event(Event::Log(Log {
-                address: log.address,
-                topics: log.topics,
-                data: log.data,
-            }));
-        }
-    }
 }
 
 pub fn create_address(caller: H160, nonce: U256) -> H160 {
