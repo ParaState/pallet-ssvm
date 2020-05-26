@@ -1,0 +1,3 @@
+[submodule "rust-ssvm"]
+	path = rust-ssvm
+	url = https://github.com/second-state/rust-ssvm.git
