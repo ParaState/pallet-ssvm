@@ -45,7 +45,7 @@ use sp_runtime::{
 use sp_std::convert::TryInto;
 use sp_std::{if_std, marker::PhantomData, vec::Vec};
 #[cfg(feature = "std")]
-use ssvm::{CallKind, Revision, StatusCode, StorageStatus};
+use ssvm::types::{CallKind, Revision, StatusCode, StorageStatus};
 #[cfg(feature = "std")]
 use std::collections::HashMap;
 const MODULE_ID: ModuleId = ModuleId(*b"ssvmmoid");

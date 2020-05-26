@@ -27,10 +27,9 @@ use sp_std::if_std;
 use sp_std::marker::PhantomData;
 use sp_std::vec::Vec;
 #[cfg(feature = "std")]
-use ssvm::{
-    Address, Bytes, Bytes32, CallKind, HostInterface, StatusCode, StorageStatus, ADDRESS_LENGTH,
-    BYTES32_LENGTH,
-};
+use ssvm::host::HostInterface;
+#[cfg(feature = "std")]
+use ssvm::types::{Address, Bytes, Bytes32, CallKind, StatusCode, StorageStatus, ADDRESS_LENGTH};
 
 #[derive(Clone, Eq, PartialEq, Encode, Decode, Default)]
 #[cfg_attr(feature = "std", derive(Debug, Serialize, Deserialize))]
