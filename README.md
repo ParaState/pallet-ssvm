@@ -1,4 +1,4 @@
-# Pellet SSVM
+# Pallet SSVM
 
 SSVM pallet is as a runtime library for [Substrate](https://substrate.dev/docs/en/conceptual/runtime/frame)
 
@@ -15,4 +15,4 @@ git-fetch-with-cli = true
 ```
 
 ## License
-Pellet SSVM is [AGPL 3.0 licensed](LICENSE).
+Pallet SSVM is [AGPL 3.0 licensed](LICENSE).
