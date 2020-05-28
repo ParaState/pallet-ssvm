@@ -1,18 +1,10 @@
 # Pallet SSVM
 
-SSVM pallet is as a runtime library for [Substrate](https://substrate.dev/docs/en/conceptual/runtime/frame)
+SSVM pallet is as a runtime library for [Substrate](https://substrate.dev/docs/en/conceptual/runtime/frame).
 
-At the first stage we add a dependency crate [rust-ssvm](https://github.com/second-state/rust-ssvm) as our ewasm engine.
+We add a dependency crate [rust-ssvm](https://github.com/second-state/rust-ssvm) as our ewasm engine and implement the evmc-client necessary host functions with our substrate backend implementation.
 
-## Troubleshooting
-We use git repository as `crate rust-ssvm` path. So we need update file as below before we run `cargo build`.
-
-- `~/.cargo/config`
-
-```
-[net]
-git-fetch-with-cli = true
-```
+[Substrate node with SSVM](https://github.com/second-state/substrate-ssvm-node)
 
 ## License
 Pallet SSVM is [AGPL 3.0 licensed](LICENSE).
