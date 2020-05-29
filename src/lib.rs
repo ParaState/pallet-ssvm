@@ -27,7 +27,7 @@ pub use crate::backend::{create_address, Account, Log, TxContext};
 use frame_support::traits::{Currency, ExistenceRequirement, WithdrawReason};
 use frame_support::weights::SimpleDispatchInfo;
 use frame_support::weights::{DispatchClass, FunctionOf, Weight};
-use frame_support::{decl_error, decl_event, decl_module, decl_storage, ensure};
+use frame_support::{decl_error, decl_event, decl_module, decl_storage};
 use frame_system::{self as system, ensure_signed};
 #[cfg(feature = "std")]
 use lazy_static::lazy_static;
