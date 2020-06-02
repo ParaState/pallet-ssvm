@@ -22,7 +22,7 @@ primitive-types = { version = "0.7.0", default-features = false, features = ["rl
 rlp = { version = "0.4", default-features = false }
 sha2 = { version = "0.8", default-features = false }
 sha3 = { version = "0.8", default-features = false }
-ssvm = { optional = true, package = "rust-ssvm", git = "https://github.com/second-state/rust-ssvm", rev = "d236b8ea4eb13be1918a48203cfb2fb649524792" }
+ssvm = { optional = true, package = "rust-ssvm", git = "https://github.com/second-state/rust-ssvm", tag = "v0.0.1" }
 hex = "^0.4"
 lazy_static = { version ="1.4.0"}
 
