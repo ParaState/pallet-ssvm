@@ -1548,7 +1548,7 @@ dependencies = [
 [[package]]
 name = "rust-ssvm"
 version = "0.0.1"
-source = "git+https://github.com/second-state/rust-ssvm?rev=d236b8ea4eb13be1918a48203cfb2fb649524792#d236b8ea4eb13be1918a48203cfb2fb649524792"
+source = "git+https://github.com/second-state/rust-ssvm?tag=v0.0.1#a26889703551447a95b9c18ab1a63fe3c87155d4"
 dependencies = [
  "clap",
  "cmake",
