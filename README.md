@@ -7,4 +7,4 @@ We add a dependency crate [rust-ssvm](https://github.com/second-state/rust-ssvm)
 [Substrate node with SSVM](https://github.com/second-state/substrate-ssvm-node)
 
 ## License
-Pallet SSVM is [AGPL 3.0 licensed](LICENSE).
+Pallet SSVM has dual license, including [AGPL 3.0 license](LICENSE.AGPL-3.0) and [APACHE-2 license](LICENSE.APACHE-2).
