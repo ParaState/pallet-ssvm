@@ -205,7 +205,7 @@ decl_module! {
                 let sender = ensure_signed(origin)?;
                 let source = T::ConvertAccountId::convert_account_id(&sender);
                 let nonce = Accounts::get(&source).nonce;
-                let (result, gas_left, status_code) = Self::execute_ssvm(
+                let (result, _gas_left, status_code) = Self::execute_ssvm(
                     source,
                     target,
                     value,
@@ -244,7 +244,7 @@ decl_module! {
                 let source = T::ConvertAccountId::convert_account_id(&sender);
                 let nonce = Accounts::get(&source).nonce;
                 let created_address = create_address(source, nonce);
-                let (output, gas_left, status_code) = Self::execute_ssvm(
+                let (output, _gas_left, status_code) = Self::execute_ssvm(
                     source,
                     created_address,
                     value,
@@ -344,10 +344,10 @@ impl<T: Trait> Module<T> {
     #[cfg(feature = "std")]
     fn execute_precompiles(
         target: &H160,
-        value: &U256,
+        _value: &U256,
         data: &Vec<u8>,
         gas_limit: &u32,
-        gas_price: &U256,
+        _gas_price: &U256,
     ) -> (bool, Vec<u8>, i64) {
         match &hex::encode(target)[..] {
             "0000000000000000000000000000000000000002" => {
@@ -371,7 +371,7 @@ impl<T: Trait> Module<T> {
         data: Vec<u8>,
         gas_limit: u32,
         gas_price: U256,
-        nonce: U256,
+        _nonce: U256,
         call_kind: CallKind,
     ) -> Result<(Vec<u8>, i64, StatusCode), Error<T>> {
         // No coinbase, difficulty in substrate nodes.
