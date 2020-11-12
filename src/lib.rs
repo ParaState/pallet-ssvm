@@ -25,12 +25,10 @@ mod backend;
 use crate::backend::HostContext;
 pub use crate::backend::{create_address, Account, Log, TxContext};
 use frame_support::traits::{Currency, ExistenceRequirement, WithdrawReason};
-use frame_support::weights::DispatchInfo;
-use frame_support::weights::{DispatchClass, Weight};
+use frame_support::weights::Weight;
 use frame_support::{decl_error, decl_event, decl_module, decl_storage};
-use frame_system::{self as system, ensure_signed};
+use frame_system::ensure_signed;
 #[cfg(feature = "std")]
-use lazy_static::lazy_static;
 use sha2::Sha256;
 use sha3::{Digest, Keccak256};
 use sp_core::{Hasher, H160, H256, U256};
