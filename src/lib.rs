@@ -25,7 +25,7 @@ mod backend;
 use crate::backend::HostContext;
 pub use crate::backend::{create_address, Account, Log, TxContext};
 use frame_support::traits::{Currency, ExistenceRequirement, WithdrawReason};
-use frame_support::weights::SimpleDispatchInfo;
+use frame_support::weights::DispatchInfo;
 use frame_support::weights::{DispatchClass, FunctionOf, Weight};
 use frame_support::{decl_error, decl_event, decl_module, decl_storage};
 use frame_system::{self as system, ensure_signed};
@@ -151,7 +151,7 @@ decl_module! {
         fn deposit_event() = default;
 
         /// Deposit balance from currency/balances module into Ewasm.
-        #[weight = SimpleDispatchInfo::FixedNormal(10_000)]
+        #[weight = 10_000]
         fn deposit_balance(origin, value: BalanceOf<T>) {
             let sender = ensure_signed(origin)?;
 
@@ -171,7 +171,7 @@ decl_module! {
         }
 
         /// Withdraw balance from Ewasm into currency/balances module.
-        #[weight = SimpleDispatchInfo::FixedNormal(10_000)]
+        #[weight = 10_000]
         fn withdraw_balance(origin, value: BalanceOf<T>) {
             let sender = ensure_signed(origin)?;
             let address = T::ConvertAccountId::convert_account_id(&sender);
