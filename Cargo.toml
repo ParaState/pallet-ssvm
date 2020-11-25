@@ -10,15 +10,15 @@ description = "Substrate SSVM pallet"
 [dependencies]
 serde = { version = "1.0.101", optional = true, features = ["derive"] }
 codec = { package = "parity-scale-codec", version = "1.2.0", default-features = false }
-frame-support = { version = "2.0.0-alpha.5", default-features = false }
-frame-system = { version = "2.0.0-alpha.5", default-features = false }
-pallet-timestamp = { version = "2.0.0-alpha.5", default-features = false }
-pallet-balances = { version = "2.0.0-alpha.5", default-features = false }
-sp-core = { version = "2.0.0-alpha.5", default-features = false }
-sp-runtime = { version = "2.0.0-alpha.5", default-features = false }
-sp-std = { version = "2.0.0-alpha.5", default-features = false }
-sp-io = { version = "2.0.0-alpha.5", default-features = false }
-primitive-types = { version = "0.7.0", default-features = false, features = ["rlp"] }
+frame-support = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "rococo-branch" }
+frame-system = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "rococo-branch" }
+pallet-timestamp = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "rococo-branch" }
+pallet-balances = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "rococo-branch" }
+sp-core = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "rococo-branch" }
+sp-runtime = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "rococo-branch" }
+sp-std = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "rococo-branch" }
+sp-io = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "rococo-branch" }
+primitive-types = { version = "0.7.3", default-features = false, features = ["rlp"] }
 rlp = { version = "0.4", default-features = false }
 sha2 = { version = "0.8", default-features = false }
 sha3 = { version = "0.8", default-features = false }
