@@ -25,12 +25,10 @@ mod backend;
 use crate::backend::HostContext;
 pub use crate::backend::{create_address, Account, Log, TxContext};
 use frame_support::traits::{Currency, ExistenceRequirement, WithdrawReason};
-use frame_support::weights::SimpleDispatchInfo;
-use frame_support::weights::{DispatchClass, FunctionOf, Weight};
+use frame_support::weights::Weight;
 use frame_support::{decl_error, decl_event, decl_module, decl_storage};
-use frame_system::{self as system, ensure_signed};
+use frame_system::ensure_signed;
 #[cfg(feature = "std")]
-use lazy_static::lazy_static;
 use sha2::Sha256;
 use sha3::{Digest, Keccak256};
 use sp_core::{Hasher, H160, H256, U256};
@@ -151,7 +149,7 @@ decl_module! {
         fn deposit_event() = default;
 
         /// Deposit balance from currency/balances module into Ewasm.
-        #[weight = SimpleDispatchInfo::FixedNormal(10_000)]
+        #[weight = 10_000]
         fn deposit_balance(origin, value: BalanceOf<T>) {
             let sender = ensure_signed(origin)?;
 
@@ -171,7 +169,7 @@ decl_module! {
         }
 
         /// Withdraw balance from Ewasm into currency/balances module.
-        #[weight = SimpleDispatchInfo::FixedNormal(10_000)]
+        #[weight = 10_000]
         fn withdraw_balance(origin, value: BalanceOf<T>) {
             let sender = ensure_signed(origin)?;
             let address = T::ConvertAccountId::convert_account_id(&sender);
@@ -194,7 +192,7 @@ decl_module! {
         }
 
         /// Issue an Ewasm call operation. This is similar to a message call transaction in Ethereum.
-        #[weight = FunctionOf(|(_, _, _, gas_limit, gas_price): (&H160, &Vec<u8>, &U256, &u32, &U256)| (*gas_price).saturated_into::<Weight>().saturating_mul(*gas_limit), DispatchClass::Normal, true)]
+        #[weight = (*gas_price).saturated_into::<Weight>().saturating_mul(*gas_limit as Weight)]
         fn call(
             origin,
             target: H160,
@@ -207,7 +205,7 @@ decl_module! {
                 let sender = ensure_signed(origin)?;
                 let source = T::ConvertAccountId::convert_account_id(&sender);
                 let nonce = Accounts::get(&source).nonce;
-                let (result, gas_left, status_code) = Self::execute_ssvm(
+                let (result, _gas_left, status_code) = Self::execute_ssvm(
                     source,
                     target,
                     value,
@@ -233,7 +231,7 @@ decl_module! {
         }
 
         /// Create contract with Ewasm
-        #[weight = FunctionOf(|(_, _, gas_limit, gas_price): (&Vec<u8>, &U256, &u32, &U256)| (*gas_price).saturated_into::<Weight>().saturating_mul(*gas_limit), DispatchClass::Normal, true)]
+        #[weight = (*gas_price).saturated_into::<Weight>().saturating_mul(*gas_limit as Weight)]
         fn create(
             origin,
             code: Vec<u8>,
@@ -246,7 +244,7 @@ decl_module! {
                 let source = T::ConvertAccountId::convert_account_id(&sender);
                 let nonce = Accounts::get(&source).nonce;
                 let created_address = create_address(source, nonce);
-                let (output, gas_left, status_code) = Self::execute_ssvm(
+                let (output, _gas_left, status_code) = Self::execute_ssvm(
                     source,
                     created_address,
                     value,
@@ -346,10 +344,10 @@ impl<T: Trait> Module<T> {
     #[cfg(feature = "std")]
     fn execute_precompiles(
         target: &H160,
-        value: &U256,
+        _value: &U256,
         data: &Vec<u8>,
         gas_limit: &u32,
-        gas_price: &U256,
+        _gas_price: &U256,
     ) -> (bool, Vec<u8>, i64) {
         match &hex::encode(target)[..] {
             "0000000000000000000000000000000000000002" => {
@@ -373,7 +371,7 @@ impl<T: Trait> Module<T> {
         data: Vec<u8>,
         gas_limit: u32,
         gas_price: U256,
-        nonce: U256,
+        _nonce: U256,
         call_kind: CallKind,
     ) -> Result<(Vec<u8>, i64, StatusCode), Error<T>> {
         // No coinbase, difficulty in substrate nodes.
