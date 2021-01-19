@@ -20,10 +20,13 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 mod backend;
+mod fund;
 
 #[cfg(feature = "std")]
 use crate::backend::HostContext;
 pub use crate::backend::{create_address, Account, Log, TxContext};
+use crate::fund::FundManager;
+pub use crate::fund::Options;
 use frame_support::traits::{Currency, ExistenceRequirement, WithdrawReason};
 use frame_support::weights::{DispatchClass, FunctionOf, Weight};
 use frame_support::{decl_error, decl_event, decl_module, decl_storage};
@@ -45,6 +48,7 @@ use ssvm::types::{CallKind, Revision, StatusCode, StorageStatus};
 #[cfg(feature = "std")]
 use std::collections::HashMap;
 const MODULE_ID: ModuleId = ModuleId(*b"ssvmmoid");
+use core::convert::TryFrom;
 #[cfg(feature = "std")]
 use std::sync::Mutex;
 
@@ -105,6 +109,7 @@ decl_storage! {
         Accounts get(fn accounts) config(): map hasher(blake2_128_concat) H160 => Account;
         AccountCodes: map hasher(blake2_128_concat) H160 => Vec<u8>;
         AccountStorages: double_map hasher(blake2_128_concat) H160, hasher(blake2_128_concat) H256 => H256;
+        FundOptions get(fn fund_options) config(): Options;
     }
 }
 
@@ -190,6 +195,13 @@ decl_module! {
             Accounts::insert(&address, account);
 
             T::Currency::resolve_creating(&sender, imbalance);
+        }
+
+        /// pure unlock token test function
+        #[weight = 10_000]
+        fn unlock(origin) {
+            let timestamp = pallet_timestamp::Module::<T>::get().unique_saturated_into() / 1000;
+            FundManager::try_unlock(i64::try_from(timestamp).unwrap());
         }
 
         /// Issue an Ewasm call operation. This is similar to a message call transaction in Ethereum.
