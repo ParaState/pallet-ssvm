@@ -402,12 +402,12 @@ impl<T: Trait> Module<T> {
             difficulty,
             chain_id,
         );
-        let context = HostContext::<T>::new(tx_context);
+        let mut context = HostContext::<T>::new(tx_context);
         let depth = 0;
         let create2_salt = [0u8; 32];
         let vm = ssvm::create();
         let (output, gas_left, status_code) = vm.execute(
-            Box::new(context),
+            &mut context,
             Revision::EVMC_BYZANTIUM,
             call_kind,
             false,

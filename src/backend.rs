@@ -24,7 +24,7 @@ use sp_core::{H160, H256, U256};
 use sp_std::marker::PhantomData;
 use sp_std::vec::Vec;
 #[cfg(feature = "std")]
-use ssvm::host::HostInterface;
+use ssvm::host::HostContext as HostInterface;
 #[cfg(feature = "std")]
 use ssvm::types::{Address, Bytes, Bytes32, CallKind, StatusCode, StorageStatus, ADDRESS_LENGTH};
 
@@ -187,6 +187,7 @@ impl<T: Trait> HostInterface for HostContext<T> {
         _gas: i64,
         _depth: i32,
         _is_static: bool,
+        _salt: &Bytes32,
     ) -> (Vec<u8>, i64, Address, StatusCode) {
         let (output, gas_left, status_code) = Module::<T>::execute_ssvm(
             _sender.into(),

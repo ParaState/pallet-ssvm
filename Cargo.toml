@@ -1,6 +1,6 @@
 [package]
 name = "pallet-ssvm"
-version = "0.1.0-rc1"
+version = "0.1.0-rc2"
 authors = ["Second State"]
 edition = "2018"
 license = "AGPL-3.0"
@@ -26,7 +26,7 @@ primitive-types = { version = "0.7.0", default-features = false, features = ["rl
 rlp = { version = "0.4", default-features = false }
 sha2 = { version = "0.8", default-features = false }
 sha3 = { version = "0.8", default-features = false }
-ssvm = { optional = true, version = "0.1.0-rc1", package = "rust-ssvm" }
+ssvm = { optional = true, version = "0.1.0-rc2", package = "rust-ssvm" }
 hex = "^0.4"
 lazy_static = { version ="1.4.0"}
 
