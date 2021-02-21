@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::{AccountCodes, Accounts, Event, Module, Trait};
+use crate::{AccountCodes, Accounts, Event, Module, Config};
 use codec::{Decode, Encode};
 use frame_support::storage::StorageMap;
 #[cfg(feature = "std")]
@@ -109,7 +109,7 @@ impl<T> HostContext<T> {
 }
 
 #[cfg(feature = "std")]
-impl<T: Trait> HostInterface for HostContext<T> {
+impl<T: Config> HostInterface for HostContext<T> {
     fn account_exists(&mut self, _addr: &[u8; 20]) -> bool {
         true
     }

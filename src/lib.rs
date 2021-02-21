@@ -24,7 +24,7 @@ mod backend;
 #[cfg(feature = "std")]
 use crate::backend::HostContext;
 pub use crate::backend::{create_address, Account, Log, TxContext};
-use frame_support::traits::{Currency, ExistenceRequirement, WithdrawReason};
+use frame_support::traits::{Currency, ExistenceRequirement, Get, WithdrawReasons};
 use frame_support::weights::Weight;
 use frame_support::{decl_error, decl_event, decl_module, decl_storage};
 use frame_system::ensure_signed;
@@ -48,8 +48,8 @@ const MODULE_ID: ModuleId = ModuleId(*b"ssvmmoid");
 use std::sync::Mutex;
 
 /// Type alias for currency balance.
-pub type BalanceOf<T> =
-    <<T as Trait>::Currency as Currency<<T as frame_system::Trait>::AccountId>>::Balance;
+/// Type alias for currency balance.
+pub type BalanceOf<T> = <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 
 /// Trait for converting account ids of `balances` module into
 /// `H160` for EVM module.
@@ -90,17 +90,19 @@ impl<H: Hasher, A: AsRef<[u8]>> ConvertAccountId<A> for HashTruncateConvertAccou
 }
 
 /// SSVM module trait
-pub trait Trait: frame_system::Trait + pallet_timestamp::Trait {
+pub trait Config: frame_system::Config + pallet_timestamp::Config {
     /// Convert account ID to H160;
     type ConvertAccountId: ConvertAccountId<Self::AccountId>;
     /// Currency type for deposit and withdraw.
     type Currency: Currency<Self::AccountId>;
+    /// Chain ID of EVM.
+    type ChainId: Get<u64>;
     /// The overarching event type.
-    type Event: From<Event> + Into<<Self as frame_system::Trait>::Event>;
+    type Event: From<Event> + Into<<Self as frame_system::Config>::Event>;
 }
 
 decl_storage! {
-    trait Store for Module<T: Trait> as SSVM {
+    trait Store for Module<T: Config> as SSVM {
         Accounts get(fn accounts) config(): map hasher(blake2_128_concat) H160 => Account;
         AccountCodes: map hasher(blake2_128_concat) H160 => Vec<u8>;
         AccountStorages: double_map hasher(blake2_128_concat) H160, hasher(blake2_128_concat) H256 => H256;
@@ -120,7 +122,7 @@ decl_event! {
 }
 
 decl_error! {
-    pub enum Error for Module<T: Trait> {
+    pub enum Error for Module<T: Config> {
         /// Not enough balance to perform action
         BalanceLow,
         /// Calculating total fee overflowed
@@ -143,7 +145,7 @@ decl_error! {
 }
 
 decl_module! {
-    pub struct Module<T: Trait> for enum Call where origin: T::Origin {
+    pub struct Module<T: Config> for enum Call where origin: T::Origin {
         type Error = Error<T>;
 
         fn deposit_event() = default;
@@ -156,7 +158,7 @@ decl_module! {
             let imbalance = T::Currency::withdraw(
                 &sender,
                 value,
-                WithdrawReason::Reserve.into(),
+                WithdrawReasons::RESERVE,
                 ExistenceRequirement::AllowDeath,
             )?;
             T::Currency::resolve_creating(&Self::account_id(), imbalance);
@@ -182,7 +184,7 @@ decl_module! {
             let imbalance = T::Currency::withdraw(
                 &Self::account_id(),
                 value,
-                WithdrawReason::Reserve.into(),
+                WithdrawReasons::RESERVE,
                 ExistenceRequirement::AllowDeath
             )?;
 
@@ -276,7 +278,7 @@ lazy_static::lazy_static! {
     static ref STORAGE_CACHE:Mutex<HashMap<(H160, H256), H256>> = Mutex::new(HashMap::new());
 }
 
-impl<T: Trait> Module<T> {
+impl<T: Config> Module<T> {
     /// The account ID of the SSVM module.
     pub fn account_id() -> T::AccountId {
         MODULE_ID.into_account()
@@ -349,7 +351,8 @@ impl<T: Trait> Module<T> {
         gas_limit: &u32,
         _gas_price: &U256,
     ) -> (bool, Vec<u8>, i64) {
-        match &hex::encode(target)[..] {
+        let s: String = rustc_hex::ToHexIter::new(target.as_bytes().iter()).collect::<String>();
+        match &s[..] {
             "0000000000000000000000000000000000000002" => {
                 return (true, Sha256::digest(&data).to_vec(), *gas_limit as i64);
             }
@@ -377,7 +380,7 @@ impl<T: Trait> Module<T> {
         // No coinbase, difficulty in substrate nodes.
         let coinbase = H160::zero();
         let difficulty = U256::zero();
-        let chain_id = U256::from(sp_io::misc::chain_id());
+        let chain_id = U256::from(T::ChainId::get());
         let block_number: u128 = frame_system::Module::<T>::block_number().unique_saturated_into();
         let timestamp: u128 = pallet_timestamp::Module::<T>::get().unique_saturated_into();
 
