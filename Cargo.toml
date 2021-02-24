@@ -13,21 +13,21 @@ targets = ['x86_64-unknown-linux-gnu']
 
 [dependencies]
 serde = { version = "1.0.101", optional = true, features = ["derive"] }
-codec = { package = "parity-scale-codec", version = "1.3.4", default-features = false }
-frame-support = { version = "2.0.1", default-features = false }
-frame-system = { version = "2.0.1", default-features = false }
-pallet-timestamp = { version = "2.0.1", default-features = false }
-pallet-balances = { version = "2.0.1", default-features = false }
-sp-core = { version = "2.0.1", default-features = false }
-sp-runtime = { version = "2.0.1", default-features = false }
-sp-std = { version = "2.0.1", default-features = false }
-sp-io = { version = "2.0.1", default-features = false }
-primitive-types = { version = "0.7.0", default-features = false, features = ["rlp"] }
-rlp = { version = "0.4", default-features = false }
+codec = { package = "parity-scale-codec", version = "1.3.0", default-features = false, features = ["derive"] }
+frame-support = { version = "2.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "frontier" }
+frame-system = { version = "2.0.0-dev", default-features = false, package = "frame-system", git = "https://github.com/paritytech/substrate.git", branch = "frontier" }
+pallet-timestamp = { version = "2.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "frontier" }
+pallet-balances = { version = "2.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "frontier" }
+sp-core = { version = "2.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "frontier" }
+sp-runtime = { version = "2.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "frontier" }
+sp-std = { version = "2.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "frontier" }
+sp-io = { version = "2.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "frontier" }
+primitive-types = { version = "0.8.0", default-features = false, features = ["rlp", "byteorder"] }
+rlp = { version = "0.5", default-features = false }
 sha2 = { version = "0.8", default-features = false }
 sha3 = { version = "0.8", default-features = false }
 ssvm = { optional = true, version = "0.1.0-rc2", package = "rust-ssvm" }
-hex = "^0.4"
+rustc-hex = { version = "2.1.0", default-features = false }
 lazy_static = { version ="1.4.0"}
 
 [features]
